@@ -63,26 +63,24 @@ extra_requirements = [
 
 
 setup(
-    name="uvicorn",
-    version=get_version("uvicorn"),
-    url="https://github.com/encode/uvicorn",
+    name="uvicontainer",
+    version=get_version("uvicontainer"),
+    url="https://github.com/ProjectHentai/uvicorn",
     license="BSD",
     description="The lightning-fast ASGI server.",
     long_description=get_long_description(),
     long_description_content_type="text/markdown",
     author="Tom Christie",
     author_email="tom@tomchristie.com",
-    packages=get_packages("uvicorn"),
+    packages=get_packages("uvicontainer"),
     install_requires=minimal_requirements,
     extras_require={"standard": extra_requirements},
     include_package_data=True,
     classifiers=[
         "Development Status :: 4 - Beta",
-        "Environment :: Web Environment",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: BSD License",
         "Operating System :: OS Independent",
-        "Topic :: Internet :: WWW/HTTP",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
@@ -93,6 +91,6 @@ setup(
     ],
     entry_points="""
     [console_scripts]
-    uvicorn=uvicorn.main:main
+    uvicontainer=uvicontainer.main:main
     """,
 )
