@@ -7,12 +7,29 @@ import socket
 import sys
 import threading
 import abc
-
-from typing import List
-
+import time
+from typing import Any, List, Optional, Set, Tuple, Union
+from email.utils import formatdate
+from types import FrameType
 import click
 
 from uvicontainer.config import Config
+
+
+# from uvicorn._handlers.http import handle_http
+
+# from uvicorn.protocols.http.h11_impl import H11Protocol
+# from uvicorn.protocols.http.httptools_impl import HttpToolsProtocol
+# from uvicorn.protocols.websockets.websockets_impl import WebSocketProtocol
+# from uvicorn.protocols.websockets.wsproto_impl import WSProtocol
+
+if sys.platform != "win32":
+    from asyncio import start_unix_server as _start_unix_server
+else:
+
+    async def _start_unix_server(*args: Any, **kwargs: Any) -> Any:
+        raise NotImplementedError("Cannot start a unix server on win32")
+
 
 HANDLED_SIGNALS = (
     signal.SIGINT,  # Unix signal 2. Sent by Ctrl+C.
@@ -21,17 +38,19 @@ HANDLED_SIGNALS = (
 
 logger = logging.getLogger("uvicontainer.error")
 
+# Protocols = Union[H11Protocol, HttpToolsProtocol, WSProtocol, WebSocketProtocol]
+
 
 class ServerState:
     """
     Shared servers state that is available between all protocol instances.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.total_requests = 0
-        self.connections = set()
-        self.tasks = set()
-        self.default_headers = []
+        self.connections: Set = set()
+        self.tasks: Set[asyncio.Task] = set()
+        self.default_headers: List[Tuple[bytes, bytes]] = []
 
 
 class BaseServer(abc.ABC):
@@ -42,13 +61,14 @@ class BaseServer(abc.ABC):
         self.started = False
         self.should_exit = False
         self.force_exit = False
+        self.last_notified = 0.0
 
-    def run(self, sockets=None):
+    def run(self, sockets: Optional[List[socket.socket]] = None) -> None:
         self.config.setup_event_loop()
         loop = asyncio.get_event_loop()
         loop.run_until_complete(self.serve(sockets=sockets))
 
-    async def serve(self, sockets=None):
+    async def serve(self, sockets: Optional[List[socket.socket]] = None) -> None:
         config = self.config
         if not config.loaded:
             config.load()
@@ -113,7 +133,7 @@ class BaseServer(abc.ABC):
             for sig in HANDLED_SIGNALS:
                 signal.signal(sig, self.handle_exit)
 
-    def handle_exit(self, sig, frame):
+    def handle_exit(self, sig: signal.Signals, frame: FrameType):
         if self.should_exit:
             self.force_exit = True
         else:
@@ -136,11 +156,7 @@ class TCPServer(BaseServer):
 
         message = "Finished server process [%d]"
         color_message = "Finished server process [" + click.style("%d", fg="cyan") + "]"
-        logger.info(
-            "Finished server process [%d]",
-            process_id,
-            extra={"color_message": color_message},
-        )
+        logger.info(message, process_id, extra={"color_message": color_message})
 
     async def startup(self, sockets: list = None) -> None:
         await super().startup(sockets)
@@ -262,7 +278,7 @@ class TCPServer(BaseServer):
                 extra={"color_message": color_message},
             )
 
-    async def shutdown(self, sockets=None):
+    async def shutdown(self, sockets: Optional[List[socket.socket]] = None) -> None:
         logger.info("Shutting down")
         await super().shutdown(sockets)
         # Stop accepting new connections.
@@ -334,7 +350,6 @@ class UDPServer(BaseServer):
         elif config.uds is not None:
             # Create a socket using UNIX domain socket.
             raise ValueError("UDPServer can't be used with UNIX domain socket")
-
         else:
             # Standard case. Create a socket from a host/port pair.
             try:
