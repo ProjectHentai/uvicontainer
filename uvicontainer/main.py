@@ -1,4 +1,5 @@
 import logging
+import os
 import platform
 import ssl
 import sys
@@ -74,7 +75,8 @@ def print_version(ctx: click.Context, param: click.Parameter, value: bool) -> No
     "reload_dirs",
     multiple=True,
     help="Set reload directories explicitly, instead of using the current working"
-         " directory.",
+    " directory.",
+    type=click.Path(exists=True)
 )
 @click.option(
     "--reload-delay",
@@ -299,6 +301,8 @@ def run(protocol_factory: typing.Union[ProtocolFactory, str], **kwargs: typing.A
         Multiprocess(config, target=server.run, sockets=[sock]).run()
     else:
         server.run()
+    if config.uds:
+        os.remove(config.uds)
 
 
 if __name__ == "__main__":
