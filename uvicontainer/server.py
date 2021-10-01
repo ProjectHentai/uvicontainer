@@ -8,7 +8,7 @@ import sys
 import threading
 import abc
 import time
-from typing import Any, List, Optional, Set, Tuple, Union
+from typing import TYPE_CHECKING, Any, List, Optional, Set, Tuple, Union
 from email.utils import formatdate
 from types import FrameType
 import click
@@ -22,6 +22,7 @@ from uvicontainer.config import Config
 # from uvicorn.protocols.http.httptools_impl import HttpToolsProtocol
 # from uvicorn.protocols.websockets.websockets_impl import WebSocketProtocol
 # from uvicorn.protocols.websockets.wsproto_impl import WSProtocol
+
 
 if sys.platform != "win32":
     from asyncio import start_unix_server as _start_unix_server
@@ -38,8 +39,6 @@ HANDLED_SIGNALS = (
 
 logger = logging.getLogger("uvicontainer.error")
 
-# Protocols = Union[H11Protocol, HttpToolsProtocol, WSProtocol, WebSocketProtocol]
-
 
 class ServerState:
     """
@@ -48,7 +47,7 @@ class ServerState:
 
     def __init__(self) -> None:
         self.total_requests = 0
-        self.connections: Set = set()
+        self.connections: Set[asyncio.Protocol] = set()
         self.tasks: Set[asyncio.Task] = set()
         self.default_headers: List[Tuple[bytes, bytes]] = []
 
@@ -65,8 +64,9 @@ class BaseServer(abc.ABC):
 
     def run(self, sockets: Optional[List[socket.socket]] = None) -> None:
         self.config.setup_event_loop()
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(self.serve(sockets=sockets))
+        if sys.version_info >= (3, 7):
+            return asyncio.run(self.serve(sockets=sockets))
+        return asyncio.get_event_loop().run_until_complete(self.serve(sockets=sockets))
 
     async def serve(self, sockets: Optional[List[socket.socket]] = None) -> None:
         config = self.config

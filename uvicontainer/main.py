@@ -79,6 +79,20 @@ def print_version(ctx: click.Context, param: click.Parameter, value: bool) -> No
     type=click.Path(exists=True)
 )
 @click.option(
+    "--reload-include",
+    "reload_includes",
+    multiple=True,
+    help="Set glob patterns to include while watching for files. Includes '*.py' "
+    "by default, which can be overridden in reload-excludes.",
+)
+@click.option(
+    "--reload-exclude",
+    "reload_excludes",
+    multiple=True,
+    help="Set glob patterns to exclude while watching for files. Includes "
+    "'.*, .py[cod], .sw.*, ~*' by default, which can be overridden in reload-excludes.",
+)
+@click.option(
     "--reload-delay",
     type=float,
     default=0.25,
@@ -260,6 +274,8 @@ def main(
         "debug": debug,
         "reload": reload,
         "reload_dirs": reload_dirs if reload_dirs else None,
+        "reload_includes": reload_includes if reload_includes else None,
+        "reload_excludes": reload_excludes if reload_excludes else None,
         "reload_delay": reload_delay,
         "workers": workers,
         "backlog": backlog,
@@ -306,4 +322,4 @@ def run(protocol_factory: typing.Union[ProtocolFactory, str], **kwargs: typing.A
 
 
 if __name__ == "__main__":
-    main()
+    main()  # pragma: no cover
