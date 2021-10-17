@@ -20,7 +20,7 @@ def get_long_description():
     """
     Return the README.
     """
-    return open("README.md", "r", encoding="utf8").read()
+    return open("README.markdown", "r", encoding="utf8").read()
 
 
 def get_packages(package):
@@ -46,17 +46,12 @@ env_marker_below_37 = "python_version < '3.7'"
 env_marker_gte_37 = "python_version >= '3.7'"
 
 minimal_requirements = [
-    "asgiref>=3.4.0",
     "click>=7.0",
-    "h11>=0.8",
     "typing-extensions;" + env_marker_below_38,
 ]
 
 
 extra_requirements = [
-    "websockets>=9.1; " + env_marker_below_37,
-    "websockets>=10.0; " + env_marker_gte_37,
-    "httptools==0.2.*",
     "uvloop>=0.14.0,!=0.15.0,!=0.15.1; " + env_marker_cpython,
     "colorama>=0.4;" + env_marker_win,
     "watchgod>=0.6",

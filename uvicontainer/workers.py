@@ -7,27 +7,26 @@ from typing import Any
 from gunicorn.arbiter import Arbiter
 from gunicorn.workers.base import Worker
 
-from uvicorn.config import Config
-from uvicorn.main import Server
+from uviconrainer.config import Config
+from uviconrainer.main import Server
 
 
-class UvicornWorker(Worker):
+class UvicontainerWorker(Worker):
     """
-    A worker class for Gunicorn that interfaces with an ASGI consumer callable,
-    rather than a WSGI callable.
+    A worker class for Gunicorn that interfaces with a protocol factory
     """
 
-    CONFIG_KWARGS = {"loop": "auto", "http": "auto"}
+    CONFIG_KWARGS = {"loop": "auto"}
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
-        super(UvicornWorker, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
-        logger = logging.getLogger("uvicorn.error")
+        logger = logging.getLogger("uviconrainer.error")
         logger.handlers = self.log.error_log.handlers
         logger.setLevel(self.log.error_log.level)
         logger.propagate = False
 
-        logger = logging.getLogger("uvicorn.access")
+        logger = logging.getLogger("uviconrainer.access")
         logger.handlers = self.log.access_log.handlers
         logger.setLevel(self.log.access_log.level)
         logger.propagate = False
@@ -63,7 +62,7 @@ class UvicornWorker(Worker):
 
     def init_process(self) -> None:
         self.config.setup_event_loop()
-        super(UvicornWorker, self).init_process()
+        super(UvicontainerWorker, self).init_process()
 
     def init_signals(self) -> None:
         # Reset signals so Gunicorn doesn't swallow subprocess return codes
@@ -86,7 +85,3 @@ class UvicornWorker(Worker):
 
     async def callback_notify(self) -> None:
         self.notify()
-
-
-class UvicornH11Worker(UvicornWorker):
-    CONFIG_KWARGS = {"loop": "asyncio", "http": "h11"}
