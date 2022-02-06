@@ -8,15 +8,15 @@ from typing import Callable, List, Optional
 
 import click
 
-from uvicorn.config import Config
-from uvicorn.subprocess import get_subprocess
+from uvicontainer.config import Config
+from uvicontainer.subprocess import get_subprocess
 
 HANDLED_SIGNALS = (
     signal.SIGINT,  # Unix signal 2. Sent by Ctrl+C.
     signal.SIGTERM,  # Unix signal 15. Sent by `kill <pid>`.
 )
 
-logger = logging.getLogger("uvicorn.error")
+logger = logging.getLogger("uvicontainer.error")
 
 
 class BaseReload:

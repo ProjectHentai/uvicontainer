@@ -3,10 +3,10 @@ from pathlib import Path
 from socket import socket
 from typing import Callable, Dict, Iterator, List, Optional
 
-from uvicorn.config import Config
-from uvicorn.supervisors.basereload import BaseReload
+from uvicontainer.config import Config
+from uvicontainer.supervisors.basereload import BaseReload
 
-logger = logging.getLogger("uvicorn.error")
+logger = logging.getLogger("uvicontainer.error")
 
 
 class StatReload(BaseReload):

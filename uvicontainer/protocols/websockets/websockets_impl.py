@@ -8,8 +8,8 @@ from urllib.parse import unquote
 import websockets
 from websockets.extensions.permessage_deflate import ServerPerMessageDeflateFactory
 
-from uvicorn.logging import TRACE_LOG_LEVEL
-from uvicorn.protocols.utils import get_local_addr, get_remote_addr, is_ssl
+from uvicontainer.logging import TRACE_LOG_LEVEL
+from uvicontainer.protocols.utils import get_local_addr, get_remote_addr, is_ssl
 
 
 class Server:
@@ -81,7 +81,7 @@ class WebSocketProtocol(_LoggerMixin, websockets.WebSocketServerProtocol):
             ping_interval=self.config.ws_ping_interval,
             ping_timeout=self.config.ws_ping_timeout,
             extensions=[ServerPerMessageDeflateFactory()],
-            logger=logging.getLogger("uvicorn.error"),
+            logger=logging.getLogger("uvicontainer.error"),
         )
 
     def connection_made(self, transport):
@@ -178,7 +178,7 @@ class WebSocketProtocol(_LoggerMixin, websockets.WebSocketServerProtocol):
         ]
         self.transport.write(b"".join(content))
         # Allow handler task to terminate cleanly, as websockets doesn't cancel it by
-        # itself (see https://github.com/encode/uvicorn/issues/920)
+        # itself (see https://github.com/encode/uvicontainer/issues/920)
         self.handshake_started_event.set()
 
     async def ws_handler(self, protocol, path):

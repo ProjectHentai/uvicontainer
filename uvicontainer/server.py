@@ -16,12 +16,12 @@ import click
 from uvicontainer.config import Config
 
 
-# from uvicorn._handlers.http import handle_http
+# from uvicontainer._handlers.http import handle_http
 
-# from uvicorn.protocols.http.h11_impl import H11Protocol
-# from uvicorn.protocols.http.httptools_impl import HttpToolsProtocol
-# from uvicorn.protocols.websockets.websockets_impl import WebSocketProtocol
-# from uvicorn.protocols.websockets.wsproto_impl import WSProtocol
+# from uvicontainer.protocols.http.h11_impl import H11Protocol
+# from uvicontainer.protocols.http.httptools_impl import HttpToolsProtocol
+# from uvicontainer.protocols.websockets.websockets_impl import WebSocketProtocol
+# from uvicontainer.protocols.websockets.wsproto_impl import WSProtocol
 
 
 if sys.platform != "win32":

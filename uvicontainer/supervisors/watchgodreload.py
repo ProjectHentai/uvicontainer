@@ -5,10 +5,10 @@ from typing import TYPE_CHECKING, Callable, Dict, List, Optional
 
 from watchgod import DefaultWatcher
 
-from uvicorn.config import Config
-from uvicorn.supervisors.basereload import BaseReload
+from uvicontainer.config import Config
+from uvicontainer.supervisors.basereload import BaseReload
 
-logger = logging.getLogger("uvicorn.error")
+logger = logging.getLogger("uvicontainer.error")
 
 if TYPE_CHECKING:  # pragma: no cover
     import os

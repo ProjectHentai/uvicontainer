@@ -10,8 +10,8 @@ from wsproto.connection import ConnectionState
 from wsproto.extensions import PerMessageDeflate
 from wsproto.utilities import RemoteProtocolError
 
-from uvicorn.logging import TRACE_LOG_LEVEL
-from uvicorn.protocols.utils import get_local_addr, get_remote_addr, is_ssl
+from uvicontainer.logging import TRACE_LOG_LEVEL
+from uvicontainer.protocols.utils import get_local_addr, get_remote_addr, is_ssl
 
 # Check wsproto version. We've build against 0.13. We don't know about 0.14 yet.
 assert wsproto.__version__ > "0.13", "Need wsproto version 0.13"
@@ -28,7 +28,7 @@ class WSProtocol(asyncio.Protocol):
         self.app = config.loaded_app
         self.on_connection_lost = on_connection_lost
         self.loop = _loop or asyncio.get_event_loop()
-        self.logger = logging.getLogger("uvicorn.error")
+        self.logger = logging.getLogger("uvicontainer.error")
         self.root_path = config.root_path
 
         # Shared server state

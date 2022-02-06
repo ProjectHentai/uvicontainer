@@ -7,14 +7,14 @@ from typing import Callable
 
 import httptools
 
-from uvicorn.logging import TRACE_LOG_LEVEL
-from uvicorn.protocols.http.flow_control import (
+from uvicontainer.logging import TRACE_LOG_LEVEL
+from uvicontainer.protocols.http.flow_control import (
     CLOSE_HEADER,
     HIGH_WATER_LIMIT,
     FlowControl,
     service_unavailable,
 )
-from uvicorn.protocols.utils import (
+from uvicontainer.protocols.utils import (
     get_client_addr,
     get_local_addr,
     get_path_with_query_string,
@@ -50,8 +50,8 @@ class HttpToolsProtocol(asyncio.Protocol):
         self.app = config.loaded_app
         self.on_connection_lost = on_connection_lost
         self.loop = _loop or asyncio.get_event_loop()
-        self.logger = logging.getLogger("uvicorn.error")
-        self.access_logger = logging.getLogger("uvicorn.access")
+        self.logger = logging.getLogger("uvicontainer.error")
+        self.access_logger = logging.getLogger("uvicontainer.access")
         self.access_log = self.access_logger.hasHandlers()
         self.parser = httptools.HttpRequestParser(self)
         self.ws_protocol_class = config.ws_protocol_class
@@ -146,10 +146,10 @@ class HttpToolsProtocol(asyncio.Protocol):
             msg = "Unsupported upgrade request."
             self.logger.warning(msg)
 
-            from uvicorn.protocols.websockets.auto import AutoWebSocketsProtocol
+            from uvicontainer.protocols.websockets.auto import AutoWebSocketsProtocol
 
             if AutoWebSocketsProtocol is None:
-                msg = "No supported WebSocket library detected. Please use 'pip install uvicorn[standard]', or install 'websockets' or 'wsproto' manually."  # noqa: E501
+                msg = "No supported WebSocket library detected. Please use 'pip install uvicontainer[standard]', or install 'websockets' or 'wsproto' manually."  # noqa: E501
                 self.logger.warning(msg)
 
             content = [STATUS_LINE[400]]

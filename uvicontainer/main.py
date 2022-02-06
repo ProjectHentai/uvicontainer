@@ -10,7 +10,6 @@ import click
 import uvicontainer
 from uvicontainer.typing import ProtocolFactory
 from uvicontainer.config import (
-    INTERFACES,
     LOG_LEVELS,
     LOGGING_CONFIG,
     LOOP_SETUPS,
@@ -25,7 +24,6 @@ from uvicontainer.supervisors import ChangeReload, Multiprocess
 LEVEL_CHOICES = click.Choice(list(LOG_LEVELS.keys()))
 
 LOOP_CHOICES = click.Choice([key for key in LOOP_SETUPS.keys() if key != "none"])
-INTERFACE_CHOICES = click.Choice(INTERFACES)
 
 logger = logging.getLogger("uvicontainer.error")
 
@@ -75,7 +73,7 @@ def print_version(ctx: click.Context, param: click.Parameter, value: bool) -> No
     "reload_dirs",
     multiple=True,
     help="Set reload directories explicitly, instead of using the current working"
-    " directory.",
+         " directory.",
     type=click.Path(exists=True)
 )
 @click.option(
@@ -83,14 +81,14 @@ def print_version(ctx: click.Context, param: click.Parameter, value: bool) -> No
     "reload_includes",
     multiple=True,
     help="Set glob patterns to include while watching for files. Includes '*.py' "
-    "by default, which can be overridden in reload-excludes.",
+         "by default, which can be overridden in reload-excludes.",
 )
 @click.option(
     "--reload-exclude",
     "reload_excludes",
     multiple=True,
     help="Set glob patterns to exclude while watching for files. Includes "
-    "'.*, .py[cod], .sw.*, ~*' by default, which can be overridden in reload-excludes.",
+         "'.*, .py[cod], .sw.*, ~*' by default, which can be overridden in reload-excludes.",
 )
 @click.option(
     "--reload-delay",
@@ -241,6 +239,8 @@ def main(
         debug: bool,
         reload: bool,
         reload_dirs: typing.List[str],
+        reload_includes: typing.List[str],
+        reload_excludes: typing.List[str],
         reload_delay: float,
         workers: int,
         env_file: str,

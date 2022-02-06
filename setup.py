@@ -65,7 +65,7 @@ setup(
     version=get_version("uvicontainer"),
     url="https://github.com/ProjectHentai/uvicorn",
     license="BSD",
-    description="The lightning-fast ASGI server.",
+    description="The lightning-fast tcp and udp server.",
     long_description=get_long_description(),
     long_description_content_type="text/markdown",
     author="Tom Christie",

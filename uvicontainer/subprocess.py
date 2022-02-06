@@ -9,7 +9,7 @@ from multiprocessing.context import SpawnProcess
 from socket import socket
 from typing import Callable, List, Optional
 
-from uvicorn.config import Config
+from uvicontainer.config import Config
 
 multiprocessing.allow_connection_pickling()
 spawn = multiprocessing.get_context("spawn")

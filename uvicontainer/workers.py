@@ -7,8 +7,8 @@ from typing import Any
 from gunicorn.arbiter import Arbiter
 from gunicorn.workers.base import Worker
 
-from uviconrainer.config import Config
-from uviconrainer.main import Server
+from uvicontainer.config import Config
+from uvicontainer.main import TCPServer
 
 
 class UvicontainerWorker(Worker):
@@ -32,11 +32,10 @@ class UvicontainerWorker(Worker):
         logger.propagate = False
 
         config_kwargs: dict = {
-            "app": None,
+            "protocol_factory": None,
             "log_config": None,
             "timeout_keep_alive": self.cfg.keepalive,
             "timeout_notify": self.timeout,
-            "callback_notify": self.callback_notify,
             "limit_max_requests": self.max_requests,
             "forwarded_allow_ips": self.cfg.forwarded_allow_ips,
         }
@@ -67,21 +66,27 @@ class UvicontainerWorker(Worker):
     def init_signals(self) -> None:
         # Reset signals so Gunicorn doesn't swallow subprocess return codes
         # other signals are set up by Server.install_signal_handlers()
-        # See: https://github.com/encode/uvicorn/issues/894
+        # See: https://github.com/encode/uvicontainer/issues/894
         for s in self.SIGNALS:
             signal.signal(s, signal.SIG_DFL)
 
     async def _serve(self) -> None:
-        self.config.app = self.wsgi
-        server = Server(config=self.config)
+        self.config.protocol_factory = self.wsgi
+        server = TCPServer(config=self.config)
         await server.serve(sockets=self.sockets)
         if not server.started:
             sys.exit(Arbiter.WORKER_BOOT_ERROR)
 
     def run(self) -> None:
-        if sys.version_info >= (3, 7):
-            return asyncio.run(self._serve())
-        return asyncio.get_event_loop().run_until_complete(self._serve())
+        async def all_():
+            await asyncio.wait([self._serve(),
+                                self.on_tick()], return_when=asyncio.FIRST_COMPLETED)
 
-    async def callback_notify(self) -> None:
-        self.notify()
+        if sys.version_info >= (3, 7):
+            return asyncio.run(all_())
+        return asyncio.get_event_loop().run_until_complete(all_())
+
+    async def on_tick(self) -> None:
+        while True:
+            self.notify()
+            await asyncio.sleep(self.timeout)
